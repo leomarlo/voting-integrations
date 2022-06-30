@@ -144,7 +144,7 @@ describe("Snapshot", function(){
             .to.be.
             revertedWith(`'StatusError(${identifier}, ${VotingStatus.completed})'`);
     });
-    it("should revert when calling 'conclude' when status is not active.", async ()=>{
+    it("should revert a 'conclude'-call when status is not active.", async ()=>{
         let [Alice, Bob] = await ethers.getSigners()
         let contracts: Contracts =  await deploySnapshot();
         let tx = await contracts.snapshot.start("0x", "0x");
@@ -162,7 +162,7 @@ describe("Snapshot", function(){
             revertedWith(`'StatusError(${identifier}, ${VotingStatus.completed})'`)
         
     });
-    it("should revert when calling 'conclude' when status is active and the deadline has not passed.",async()=>{
+    it("should revert a 'conclude'-call when status is active and the deadline has not passed.",async()=>{
         let [Alice, Bob] = await ethers.getSigners()
         let contracts: Contracts =  await deploySnapshot();
         let tx = await contracts.snapshot.start("0x", "0x");
