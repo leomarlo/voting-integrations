@@ -112,10 +112,9 @@ describe("Snapshot", function(){
         let [Alice, Bob] = await ethers.getSigners()
         let contracts: Contracts =  await deploySnapshot();
         let instanceInfo: IdentifierAndTimestamp = await startVotingInstance(contracts.snapshot)
+        let deadline = instanceInfo.timestamp + (await contracts.snapshot.VOTING_DURATION()).toNumber()
         await contracts.snapshot.connect(Alice).vote(instanceInfo.identifier, APPROVE)
-        await ethers.provider.send(
-            'evm_setNextBlockTimestamp',
-            [instanceInfo.timestamp + (await contracts.snapshot.VOTING_DURATION()).toNumber() + 1]); 
+        await ethers.provider.send('evm_setNextBlockTimestamp', [deadline + 1]);
         let beforeStatus = (await contracts.snapshot.getStatus(instanceInfo.identifier)).toNumber()
         expect(beforeStatus).to.equal(VotingStatus.active)
         await contracts.snapshot.connect(Bob).vote(instanceInfo.identifier, APPROVE)
@@ -143,8 +142,7 @@ describe("Snapshot", function(){
         let instanceInfo: IdentifierAndTimestamp = await startVotingInstance(contracts.snapshot)
         let deadline = instanceInfo.timestamp + (await contracts.snapshot.VOTING_DURATION()).toNumber()
         await contracts.snapshot.connect(Alice).vote(instanceInfo.identifier, APPROVE);
-        await ethers.provider.send('evm_setNextBlockTimestamp',
-            [deadline + 1]);
+        await ethers.provider.send('evm_setNextBlockTimestamp', [deadline + 1]);
         await contracts.snapshot.conclude(instanceInfo.identifier);
         await expect(contracts.snapshot.connect(Bob).vote(instanceInfo.identifier, APPROVE))
             .to.be.
@@ -156,8 +154,7 @@ describe("Snapshot", function(){
         let instanceInfo: IdentifierAndTimestamp = await startVotingInstance(contracts.snapshot)
         let deadline = instanceInfo.timestamp + (await contracts.snapshot.VOTING_DURATION()).toNumber()
         await contracts.snapshot.connect(Alice).vote(instanceInfo.identifier, APPROVE);
-        await ethers.provider.send('evm_setNextBlockTimestamp',
-            [deadline + 1]);
+        await ethers.provider.send('evm_setNextBlockTimestamp', [deadline + 1]);
         await contracts.snapshot.connect(Alice).vote(instanceInfo.identifier, APPROVE);
         expect((await contracts.snapshot.getStatus(instanceInfo.identifier)).toNumber())
             .to.not.equal(VotingStatus.active)
